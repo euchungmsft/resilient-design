@@ -1,28 +1,39 @@
 # resilient-config-spring-boot
-스프링 부트를 위한 복원력 구성 가이드 - Retry, Fallback, Timeouts, Circuit Breakers
+Resiliency configuration guide for Spring Boot
 
-## 도입
+## Intro
 
-[복원력을 위한 아키텍쳐 디자인 가이드]()를 기반으로 하여, 스프링부트(클라우드)로 구현하는 Retry, Fallback, Timeouts, Circuit Breakers 패턴
+Spring Boot/Cloud configuration guide to achieve resiliency using patterns against faults and trasient problems from Azure Service components
 
-## 패턴
+## Azure Cache for Redis
 
-### 1. Retry / 재시도
-
-
-
-### 2. Fallback / 대체
+### 1. Retry 
 
 
-
-### 3. Timeouts / 타임아웃
-
-
-### 4. Circuit breaker / 회로차단기
+### 2. Fallback 
 
 
+### 3. Timeouts 
 
-## 다음주제
+
+### 4. Circuit breaker 
+
+
+## Cosmos DB
+
+### 1. Retry 
+
+
+### 2. Fallback 
+
+
+### 3. Timeouts 
+
+
+### 4. Circuit breaker 
+
+
+## Next Topics
 
 - [Resilient Design](REAMD.md)
 - [Resilient Config for SpringBoot](resilient-config-spring-boot.md)
