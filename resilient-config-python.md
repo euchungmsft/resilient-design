@@ -1,4 +1,4 @@
-# resilient-config-spring-boot
+# resilient-config-python
 Resiliency configuration guide for Python
 
 ## Intro

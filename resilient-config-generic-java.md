@@ -1,4 +1,4 @@
-# resilient-config-spring-boot
+# resilient-config-generic-java
 Resiliency configuration guide for Generic Java
 
 ## Intro

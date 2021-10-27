@@ -1,4 +1,4 @@
-# resilient-config-spring-boot
+# resilient-config-golang
 Resiliency configuration guide for Golang
 
 ## Intro

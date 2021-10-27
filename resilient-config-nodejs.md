@@ -1,4 +1,4 @@
-# resilient-config-spring-boot
+# resilient-config-nodejs
 Resiliency configuration guide for Node.js
 
 ## Intro
