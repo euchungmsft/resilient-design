@@ -1,12 +1,7 @@
 # resilient-design
 App architecture design guide for resiliency - Retry, Fallback, Timeouts, Circuit Breakers
 
-## 시작하기전에
-
-본문의 내용은 마이크로소프트 애저 [WAF, Well-Architected Framework](https://docs.microsoft.com/en-us/azure/architecture/framework/)를 기반으로 하며 다음의 레퍼런스를 참조함. 
-
-- [복원력 있는 애플리케이션 구현](https://docs.microsoft.com/ko-kr/dotnet/architecture/microservices/implement-resilient-applications/)
-- [클라우드 응용프로그램의 모범사례](https://docs.microsoft.com/ko-kr/azure/architecture/best-practices/index-best-practices)
+<https://blog.codecentric.de/en/2019/06/resilience-design-patterns-retry-fallback-timeout-circuit-breaker/>
 
 ## 도입
 
@@ -18,17 +13,41 @@ App architecture design guide for resiliency - Retry, Fallback, Timeouts, Circui
 
 가용성 = 업타임 / (전체시간 = 업타임 + 다운타임)
 
-전통적인 접근 방식은 업타임을 늘리는 것을 목표로 하는 반면 현대적인 접근 방식은 복구시간을 줄여 전체 다운타임을 줄이는 것을 목표로함
+### 직렬배치 vs 병렬배치
+시스템을 직렬 및 병렬의 부품 상호 연결로 모델링하여 계산됩니다
+https://www.eventhelix.com/fault-handling/system-reliability-availability/
 
-본문에서는 복구시간 제어 수간으로서 Retry, fallback, timeout 및 circuit breaker 의 네 가지 패턴을 설명함
+- 부품의 고장으로 인해 조합이 작동하지 않는 경우 두 부품은 직렬로 작동하는 것으로 간주됩니다.
+- 한 부품의 고장으로 인해 다른 부품이 고장난 부품의 작업을 대신하게 되면 두 부품은 병렬로 작동하는 것으로 간주됩니다.
+
+#### 직렬배치 가용성
+
+위에서 언급한 바와 같이 두 부품 X와 Y는 부품 중 하나의 고장으로 인해 조합의 고장이 발생하는 경우 직렬로 작동하는 것으로 간주됩니다. 결합된 시스템은 파트 X와 파트 Y를 모두 사용할 수 있는 경우에만 작동합니다. 이로부터 결합된 가용성은 두 부분의 가용성의 산물임을 알 수 있습니다. 결합된 가용성은 아래 방정식으로 표시됩니다.
+
+https://www.eventhelix.com/fault-handling/availability_series.gif
+
+A = Ax x Ay
+
+#### 병렬배치 가용성
+
+위에서 언급했듯이 두 부품이 모두 고장났을 때 결합이 실패한 것으로 간주되면 두 부품이 병렬로 작동하는 것으로 간주됩니다. 둘 중 하나를 사용할 수 있는 경우 결합된 시스템이 작동합니다. 이로부터 결합된 가용성은 1 -(두 부분 모두 사용할 수 없음)이 됩니다. 결합된 가용성은 아래 방정식으로 표시됩니다.
+
+A = 1-(1-Ax)2
+
+위 방정식의 의미는 병렬로 연결된 두 구성 요소의 가용성이 개별 구성 요소의 가용성보다 항상 훨씬 높다는 것입니다. 위 그림의 시스템을 고려하십시오. 파트 X의 두 인스턴스가 병렬로 연결됩니다. 아래 표는 개별 구성 요소와 병렬 조합의 가용성과 가동 중지 시간을 보여줍니다.
+
+
+전통적인 접근 방식은 업타임을 늘리는 것을 목표로 하는 반면 현대적인 접근 방식은 복구시간을 줄여 다운타임을 줄이는 것을 목표로함. Uwe Friedrichsen 은 탄력성 설계 패턴을 느슨한결합, 격리, 대기시간 제어 및 감독 네 가지 범주로 분류
+
+https://res.cloudinary.com/practicaldev/image/fetch/s--0IP86XgP--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_auto%2Cw_880/https://thepracticaldev.s3.amazonaws.com/i/qstzssj2v491i412pkss.png
+
+이 블로그 게시물에서는 대기 시간 제어 범주에서 Retry ,  fallback ,  timeout 및  circuit breaker 의 네 가지 패턴을 살펴보고자  합니다. 이론적 소개 후에 우리는 이러한 패턴이 Eclipse Vert.x를 사용하여 실제로 어떻게 적용될 수 있는지 볼 것입니다. 대체 구현에 대해 논의하고 결과를 요약하여 게시물을 마무리합니다.
 
 ## 패턴 
 
 ### Retry 
 
-예상치 못한 응답(또는 요청에 응답없음)이 요청을 다시 전송하여 수정할 수 있다고 가정하면, 재시도 패턴을 사용하는 것이 도움이 될 수 있습니다. 작업이 실패로 표시되기 전에 실패한 경우 실패한 요청이 구성 가능한 횟수만큼 재시도되는 매우 간단한 패턴입니다.
-
-단 Insert/Update/Delete가 포함된 DB 쿼리 주의. 이경우에도 Auto Commit 으로 설정된 경우에는 무리없이 적용 가능함
+예상치 못한 응답(또는 해당 문제에 대한 응답 없음)이 요청을 다시 전송하여 수정할 수 있다고 가정할 때마다 재시도 패턴을 사용하는 것이 도움이 될 수 있습니다. 작업이 실패로 표시되기 전에 실패한 경우 실패한 요청이 구성 가능한 횟수만큼 재시도되는 매우 간단한 패턴입니다.
 
 다음 애니메이션은 사기 수표 발행을 시도하는 결제 서비스를 보여줍니다. 첫 번째 요청은 부정행위 체크 서비스의 내부 서버 오류로 인해 실패합니다. 결제 서비스는 요청을 재시도하고 거래가 사기가 아니라는 응답을 받습니다.
 
