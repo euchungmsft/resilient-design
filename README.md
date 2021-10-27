@@ -42,7 +42,9 @@
 - 대상 서비스에 대한 많은 요청으로 인해 응답이 없거나 느린 경우
 - 그러나 대상 서비스에 과부하가 걸려 문제가 발생한 경우 재시도하면 문제가 더욱 악화될 수 있습니다. 복원 패턴이 서비스 거부 공격으로 바뀌는 것을 방지하기 위해서, 재시도 횟수, 간격, 지연 등으로 제한하며, 다음 절에서 설명하는 Fallback, Circuit Breaker 등과 함께 적용
 
-** Insert/Update/Delete가 포함된 DB쿼리시 주의. 단, 이경우에도 Auto Commit 으로 설정된 경우에는 무리없이 적용 가능함
+> Note: Insert/Update/Delete가 포함된 DB쿼리시 주의. 단, 이경우에도 Auto Commit 으로 설정된 경우에는 무리없이 적용 가능함
+
+> Note: 사용자 애플리케이션 -> 프레임워크 (ex. 커넥션풀, MyBatis등 ORM) -> 커넥터 (ex. JDBC드라이버) 등으로 구성될 경우, 패턴이 각 단계에서 중복 적용되지 않도록 주의 합니다. 어느 단계중 한곳에 적용할 것을 권장하며, 현재 애플리케이션에 적용된 프레임워크, 커넥터에서 Retry Option, Reconnect Option 등을 제공하는지 여부를 먼저 확인하십시오
 
 #### 1.1. 일시적인 오류처리
 
@@ -51,6 +53,10 @@
 #### 1.2. 애저 서비스를 위한 Retry 가이드
 
 대부분의 Azure 서비스 및 클라이언트 SDK는 재시도 메커니즘을 제공합니다. 그러나 서비스마다 특성 및 요구 사항이 다르기 때문에 이러한 메커니즘을 서로 다르므로 각 재시도 메커니즘은 특정 서비스에 맞게 조정됩니다. 이하 [애저 서비스를 위한 Retry 가이드](https://docs.microsoft.com/en-us/azure/architecture/best-practices/retry-service-specific) 참조
+
+자주 사용되는 컴포넌트에 대한 Retry 패턴 적용 가이드는 아래와 같습니다
+- [CosmosDB](https://docs.microsoft.com/en-us/azure/architecture/best-practices/retry-service-specific#cosmos-db)
+- [Redis](https://docs.microsoft.com/en-us/azure/architecture/best-practices/retry-service-specific#azure-cache-for-redis)
 
 ### 2. Fallback / 대체
 
@@ -79,3 +85,9 @@
 ## 정리하기
 
 본문에서 느슨한결합(Loosely Coupled), 격리, 대기시간 제어 및 감독이 시스템 복원력에 긍정적인 영향을 미칠 수 있는 방법을 확인함. 재시도 패턴을 사용하면 여러 번 시도하여 수정할 수 있는 통신 오류에 대응, 대체 패턴은 로컬에서 통신 오류를 해결하는 데 도움이 되지만, 비즈니스 로직상의 고려가 필요함. 시간초과 패턴은 대기시간의 최대치를 제한하고, 서킷브레이커는 통신 오류가 지속되는 경우 재시도 및 빠른 폴백으로 인한 우발적인 서비스 거부(Denial) 공격 리스크를 회피하게됨
+
+## 다음주제
+
+- 자바 애플리케이션의 Retry, Fallback, Timeouts, Circuit Breakers 패턴 구현
+- 스프링부트 애플리케이션의 Retry, Fallback, Timeouts, Circuit Breakers 패턴 구현
+- Node.js 애플리케이션의 Retry, Fallback, Timeouts, Circuit Breakers 패턴 구현
