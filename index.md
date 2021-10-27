@@ -8,12 +8,12 @@
 
 애플리케이션의 여러 개별 구성 요소도 상태 모니터링 기능과 통합해야 합니다. 이 장의 지침을 따라 가동 중지 시간 또는 복잡한 클라우드 기반 배포의 일반적인 문제가 발생하는 환경에서도 원활하게 작동하는 애플리케이션을 만들 수 있습니다.
 
-[복원력 있는 애플리케이션 구현](index.md)
-[부분 실패 처리](handle-partial-failure.md)
-[부분 실패 처리 전략](partial-failure-strategies.md)
-[지수 백오프를 사용하여 다시 시도 구현](implement-retries-exponential-backoff.md)
-[복원력 있는 Entity Framework Core SQL 연결 구현](implement-resilient-entity-framework-core-sql-connections.md)
-[IHttpClientFactory를 사용하여 복원력 있는 HTTP 요청 구현](use-httpclientfactory-to-implement-resilient-http-requests.md)
-[Polly를 통해 지수 백오프를 사용하여 HTTP 호출 다시 시도 구현](implement-http-call-retries-exponential-backoff-polly.md)
-[회로 차단기 패턴 구현](implement-circuit-breaker-pattern.md)
-[상태 모니터링](monitor-app-health.md)
+- [복원력 있는 애플리케이션 구현](index.md)
+- [부분 실패 처리](handle-partial-failure.md)
+- [부분 실패 처리 전략](partial-failure-strategies.md)
+- [지수 백오프를 사용하여 다시 시도 구현](implement-retries-exponential-backoff.md)
+- [복원력 있는 Entity Framework Core SQL 연결 구현](implement-resilient-entity-framework-core-sql-connections.md)
+- [IHttpClientFactory를 사용하여 복원력 있는 HTTP 요청 구현](use-httpclientfactory-to-implement-resilient-http-requests.md)
+- [Polly를 통해 지수 백오프를 사용하여 HTTP 호출 다시 시도 구현](implement-http-call-retries-exponential-backoff-polly.md)
+- [회로 차단기 패턴 구현](implement-circuit-breaker-pattern.md)
+- [상태 모니터링](monitor-app-health.md)

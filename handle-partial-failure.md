@@ -26,12 +26,12 @@
 
 또한 부분 실패를 처리하도록 마이크로 서비스 및 클라이언트 애플리케이션을 디자인하는 것이 중요합니다. 즉, 복원력 있는 마이크로 서비스 및 클라이언트 애플리케이션을 빌드해야 합니다.
 
-[복원력 있는 애플리케이션 구현](index.md)
-[부분 실패 처리](handle-partial-failure.md)
-[부분 실패 처리 전략](partial-failure-strategies.md)
-[지수 백오프를 사용하여 다시 시도 구현](implement-retries-exponential-backoff.md)
-[복원력 있는 Entity Framework Core SQL 연결 구현](implement-resilient-entity-framework-core-sql-connections.md)
-[IHttpClientFactory를 사용하여 복원력 있는 HTTP 요청 구현](use-httpclientfactory-to-implement-resilient-http-requests.md)
-[Polly를 통해 지수 백오프를 사용하여 HTTP 호출 다시 시도 구현](implement-http-call-retries-exponential-backoff-polly.md)
-[회로 차단기 패턴 구현](implement-circuit-breaker-pattern.md)
-[상태 모니터링](monitor-app-health.md)
+- [복원력 있는 애플리케이션 구현](index.md)
+- [부분 실패 처리](handle-partial-failure.md)
+- [부분 실패 처리 전략](partial-failure-strategies.md)
+- [지수 백오프를 사용하여 다시 시도 구현](implement-retries-exponential-backoff.md)
+- [복원력 있는 Entity Framework Core SQL 연결 구현](implement-resilient-entity-framework-core-sql-connections.md)
+- [IHttpClientFactory를 사용하여 복원력 있는 HTTP 요청 구현](use-httpclientfactory-to-implement-resilient-http-requests.md)
+- [Polly를 통해 지수 백오프를 사용하여 HTTP 호출 다시 시도 구현](implement-http-call-retries-exponential-backoff-polly.md)
+- [회로 차단기 패턴 구현](implement-circuit-breaker-pattern.md)
+- [상태 모니터링](monitor-app-health.md)
