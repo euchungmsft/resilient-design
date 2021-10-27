@@ -6,12 +6,14 @@
 
 부분 실패를 보여 주는 다이어그램
 
+![partial-failures-diagram](images/partial-failures-diagram.png) 
 그림 8-1. 서비스 스레드 가용성에 영향을 주는 종속성으로 인해 일부 실패합니다.
 
 대규모 마이크로 서비스 기반 애플리케이션에서 부분 실패는 특히 내부 마이크로 서비스 상호 작용의 대부분이 동기식 HTTP 호출(이것은 안티 패턴으로 간주됨)에 기반하여 증폭될 수 있습니다. 하루에 수백만 건의 수신 호출을 받는 시스템에 대해 생각해 봅니다. 시스템이 동기식 HTTP 호출의 긴 체인을 기반으로 하는 잘못된 디자인을 사용하는 경우, 이 수신 호출은 동기 종속성으로 수십 개의 내부 마이크로 서비스에 대한 수백만 건의 발신 호출(1:4 비율로 가정)을 생성할 수 있습니다. 이러한 상황은 그림 8-2에 나와 있습니다(특히 종속성 #3이 종속성 #4를 호출하여 체인을 시작하고 그런 다음 #4는 #5를 호출함).
 
 여러 분산 종속성을 보여 주는 다이어그램
 
+![multiple-distributed-dependencies](images/multiple-distributed-dependencies.png) 
 그림 8-2. HTTP 요청의 긴 체인을 특징으로 하는 잘못된 디자인의 영향
 
 모든 종속성 자체에 우수한 가용성이 있더라도 클라우드 기반 분산 시스템에서는 일시적인 실패가 보장됩니다. 이는 실제로 고려해야 할 사항입니다.
@@ -20,6 +22,7 @@
 
 마이크로 서비스에서 증폭된 부분 실패를 보여 주는 다이어그램
 
+![partial-failure-amplified-microservices](images/partial-failure-amplified-microservices.png) 
 그림 8-3. 동기식 HTTP 호출의 긴 체인이 있는 마이크로 서비스에 의해 증폭된 부분 실패
 
 이 문제를 최소화하기 위해 이 가이드의 [비동기식 마이크로 서비스 통합 적용 마이크로 서비스의 자율성](https://docs.microsoft.com/ko-kr/dotnet/architecture/microservices/architect-microservice-container-applications/communication-in-microservice-architecture#asynchronous-microservice-integration-enforces-microservices-autonomy) 섹션에서는 내부 마이크 서비스 전반에 걸쳐 비동기 통신을 사용하도록 권장하고 있습니다.
