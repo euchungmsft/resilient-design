@@ -119,10 +119,9 @@
 
 ## 다음주제
 
-- Resilient config for SpringBoot to Redis
-- Resilient config for SpringBoot to CosmosDB
-- Resilient config for SpringBoot to SQL Server
-- Resilient config for SpringBoot to MySQL/MariaDB
-- Resilient config for Generic Java/JDBC to Redis
-- Resilient config for Generic Java/JDBC to CosmosDB
-- Resilient config for Generic Java/JDBC to Oracle
+- [Resilient Design](REAMD.md)
+- [Resilient Config for SpringBoot](resilient-config-spring-boot.md)
+- [Resilient Config for Generic Java](resilient-config-spring-boot.md)
+- [Resilient Config for Python](resilient-config-spring-boot.md)
+- [Resilient Config for Node.js](resilient-config-spring-boot.md)
+- [Resilient Config for Golang](resilient-config-spring-boot.md)
