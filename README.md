@@ -82,7 +82,9 @@
 
 서킷브레이커는 특히 재시도, 시간초과 및 대체 패턴등과 결합될 때 유용함. 자체적으로 실패할 가능성이 있는 작업에 묶여 있는 리소스를 줄이는데 도움이됨. 클라이언트에 대한 시간 초과 대기를 피하고 회로가 끊어지면 문제가 있는 서버에 부하가 걸리는 것을 방지하게됨. 서킷브레이커는 모니터링을 위해서 사용하기도함. 모든 상태변경이 기록되어야 하며 서킷브레이커는 심층 모니터링을 위해 상태 세부정보를 공개해야 합니다. 동시에 클라이언트는 서킷브레이커 오류 대응이 요구됨. 모든 원격 호출과 마찬가지로 실패시 수행할 작업을 고려해야함. 즉, 실패 다음의 처리 - 대기열에 추가 등의 고려가 필요함
 
-앞서 언급한것과 같이 예외에 대한 후속 처리가 필요한 경우가 아니라면 서킷브레이커는 코드의 변경없이 투명하게 적용가능하고, 네트워크상의 서킷브레이커 배치시 언어 중립적인 특징이 있음. 이때에는 예외처리가 다소 제한되고, HTTP로 한정되는 경우가 많음. 대표적으로 다음과 같은 컴포넌트를 적용 가능함 
+앞서 언급한것과 같이 예외에 대한 후속 처리가 필요한 경우가 아니라면 서킷브레이커는 코드의 변경없이 투명하게 적용가능하고, 네트워크상의 서킷브레이커 배치시 언어 중립적인 특징이 있음. 이때에는 예외처리가 다소 제한되고, HTTP로 한정되는 경우가 많음
+
+대표적으로 다음과 같은 컴포넌트를 적용 가능함
 
 - [DAPR](https://github.com/dapr/dapr)
 - [Hystrix](https://github.com/Netflix/Hystrix)
@@ -97,12 +99,22 @@
 - Node.js [Opossum](https://github.com/nodeshift/opossum)
 - Golang [go-chassis](https://github.com/go-chassis/go-chassis)
 
+### 4.1. Sidecar / 사이드카
+
+격리 및 캡슐화를 제공하는 별도의 프로세스 또는 컨테이너에 애플리케이션 구성 요소를 배포합니다. 이 패턴을 사용하면 애플리케이션을 서로 다른 유형의 구성 요소 및 기술로 구성할 수도 있습니다. 패턴에서 사이드카는 상위 애플리케이션에 연결되고 애플리케이션에 대한 지원 기능을 제공합니다. 또한 사이드카는 상위 애플리케이션과 동일한 수명 주기를 공유하므로 상위 애플리케이션과 함께 만들어지고 사용 중지됩니다. 사이드카 패턴은 경우에 따라 사이드킥 패턴이라고도 하며 분해 패턴입니다. [사이드카 패턴](https://docs.microsoft.com/ko-kr/azure/architecture/patterns/sidecar) 참조
+
+서킷브레이커는 통상적으로 VM또는 컨테이너 단위로 애플리케이션과 함께 배포됨. 서킷브레이커과 함께 또는 개별적으로 적용함. 즉, Azure Kubernetes Service (AKS) 적용시 Pod 내에 사이드카, 클러스터에 서킷브레이커를 배치하며, 각각 Envoy-ISTIO 같은 조합으로 구성함
+
 ## 정리하기
 
 본문에서 느슨한결합(Loosely Coupled), 격리, 대기시간 제어 및 감독이 시스템 복원력에 긍정적인 영향을 미칠 수 있는 방법을 확인함. 재시도 패턴을 사용하면 여러 번 시도하여 수정할 수 있는 통신 오류에 대응, 대체 패턴은 로컬에서 통신 오류를 해결하는 데 도움이 되지만, 비즈니스 로직상의 고려가 필요함. 시간초과 패턴은 대기시간의 최대치를 제한하고, 서킷브레이커는 통신 오류가 지속되는 경우 재시도 및 빠른 폴백으로 인한 우발적인 서비스 거부(Denial) 공격 리스크를 회피하게됨
 
 ## 다음주제
 
-- 자바 애플리케이션의 Retry, Fallback, Timeouts, Circuit Breakers 패턴 구현
-- 스프링부트 애플리케이션의 Retry, Fallback, Timeouts, Circuit Breakers 패턴 구현
-- Node.js 애플리케이션의 Retry, Fallback, Timeouts, Circuit Breakers 패턴 구현
+- Resilient config for SpringBoot to Redis
+- Resilient config for SpringBoot to CosmosDB
+- Resilient config for SpringBoot to SQL Server
+- Resilient config for SpringBoot to MySQL/MariaDB
+- Resilient config for Generic Java/JDBC to Redis
+- Resilient config for Generic Java/JDBC to CosmosDB
+- Resilient config for Generic Java/JDBC to Oracle
