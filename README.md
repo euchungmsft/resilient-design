@@ -109,7 +109,7 @@
 
 [사이드카 패턴](https://docs.microsoft.com/ko-kr/azure/architecture/patterns/sidecar) 참조
 
-사이드카는 통상적으로 VM또는 컨테이너 단위로 애플리케이션과 함께 배포됨. 서킷브레이커과 함께 또는 개별적으로 적용함. 즉, Azure Kubernetes Service (AKS) 적용시 Pod 내에 사이드카, 클러스터에 서킷브레이커를 배치하며, 각각 Envoy-ISTIO 같은 조합으로 구성함
+사이드카는 통상적으로 VM또는 컨테이너 단위로 애플리케이션과 함께 배포됨. 서킷브레이커과 함께 또는 개별적으로 적용함. 즉, Azure Kubernetes Service (AKS) 적용시 Pod 내에 사이드카, 클러스터에 서킷브레이커를 배치하며, 각각 Envoy-ISTIO 같은 조합으로 구성함. 아래 그림은 ISTIO 기본 Proxy로 Envoy가 함께 구성된 사례
 
 ![ISTIO-Envoy](images/cluster-istio-envoy.png)
 
