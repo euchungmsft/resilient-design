@@ -1,9 +1,9 @@
 # resilient-config-spring-boot
-Resiliency configuration guide for Spring Boot
+Resiliency configuration guide for Node.js
 
 ## Intro
 
-Spring Boot/Cloud configuration guide to achieve resiliency using patterns against faults and trasient problems from Azure Service components
+Node.js application configuration guide to achieve resiliency using patterns against faults and trasient problems from Azure Service components
 
 ## Azure Cache for Redis
 
@@ -41,3 +41,4 @@ Spring Boot/Cloud configuration guide to achieve resiliency using patterns again
 - [Resilient Config for Python](resilient-config-python.md)
 - [Resilient Config for Node.js](resilient-config-nodejs.md)
 - [Resilient Config for Golang](resilient-config-golang.md)
+

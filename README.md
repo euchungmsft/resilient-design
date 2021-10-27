@@ -121,7 +121,7 @@
 
 - [Resilient Design](REAMD.md)
 - [Resilient Config for SpringBoot](resilient-config-spring-boot.md)
-- [Resilient Config for Generic Java](resilient-config-spring-boot.md)
-- [Resilient Config for Python](resilient-config-spring-boot.md)
-- [Resilient Config for Node.js](resilient-config-spring-boot.md)
-- [Resilient Config for Golang](resilient-config-spring-boot.md)
+- [Resilient Config for Generic Java](resilient-config-generic-java.md)
+- [Resilient Config for Python](resilient-config-python.md)
+- [Resilient Config for Node.js](resilient-config-nodejs.md)
+- [Resilient Config for Golang](resilient-config-golang.md)
