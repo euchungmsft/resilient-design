@@ -11,7 +11,7 @@ Because per connection cost is higher with Azure Cache for Redis, connection reu
 
 > Note: Jedis is another option to implement connection pool but Lettuce supports synchronous, asynchronous, and even reactive interfaces. Lettuce is in multi-threaded, event-based model that uses pipelining as a matter of course. Even when you use it synchronously, it’s asynchronous underneath
 
-Consider these to add to your application.yaml
+Consider these to add to your application.yaml (.properties)
 
 ```javascript
 spring.redis.timeout
@@ -51,18 +51,56 @@ Try to align with your SKU of Redis with max-active, max-idle, min-idle. When th
 
 These are very important especially when these cluster topology changes in your Redis cluster which could be caused by maintenance events and as well as actual faults in the back-ends. Try to set both of adaptive and dynamic-refresh-sources are true so that it follows the tology changes actively and passively. period needs to be set as short as 30 sec or less than that
 
-## Cosmos DB
+## Cosmos DB (SDK v4)
 
-### 1. Retry 
+You can configure the connection mode in the client builder using the directMode() or gatewayMode() methods, SDK default is direct. Azure Cosmos DB requests are made over REST(over HTTPS) when you use gateway mode. Direct mode is REST over TCP. See [this](https://docs.microsoft.com/en-us/azure/cosmos-db/sql/sql-sdk-connection-modes) for further details on connection mode
+
+https://docs.microsoft.com/en-us/azure/cosmos-db/sql/sql-sdk-connection-modes
+
+Retry settings with RetryOptions of azure-documentdb
+
+```Java
+ConnectionPolicy policy = new ConnectionPolicy();
+RetryOptions retryOptions = new RetryOptions();
+retryOptions.setMaxRetryAttemptsOnThrottledRequests(0);
+policy.setRetryOptions(retryOptions);
+policy.setConnectionMode(cfg.getConnectionMode());
+policy.setMaxPoolSize(cfg.getMaxConnectionPoolSize());
+
+DocumentClient client = new DocumentClient(cfg.getServiceEndpoint(), cfg.getMasterKey(),
+  policy, cfg.getConsistencyLevel());
+```
+
+2 attributes with getters
+```
+setMaxRetryWaitTimeInSeconds(int maxRetryWaitTimeInSeconds)
+setMaxRetryAttemptsOnThrottledRequests(int maxRetryAttemptsOnThrottledRequests)
+```
+
+See [this](https://docs.microsoft.com/en-us/java/api/com.microsoft.azure.documentdb.retryoptions?view=azure-java-stable) for further details
 
 
-### 2. Fallback 
+Cosmos DB throttles the client, it returns an HTTP 429 error. Check the status code in the CosmosException class. 
 
+RetryOptions oftenly retrieved from ConnectionPolicy by calling `getRetryOptions()`
 
-### 3. Timeouts 
+CosmosDB SDK embeds connection pools on ConnectionPolicy
 
+```
+getMaxPoolSize()
+setMaxPoolSize(int maxPoolSize)
+```
 
-### 4. Circuit breaker 
+And finally be careful of timeouts, you can find all timeouts from ConnectionPolicy, 
+
+3 timeouts with getters
+```
+setRequestTimeout(int requestTimeout)
+setDirectRequestTimeout(int directRequestTimeout)
+setIdleConnectionTimeout(int idleConnectionTimeout)
+```
+
+See [this](https://docs.microsoft.com/en-us/java/api/com.microsoft.azure.documentdb.connectionpolicy?view=azure-java-stable) for further details
 
 
 ## Next Topics
