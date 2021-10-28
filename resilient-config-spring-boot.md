@@ -79,7 +79,6 @@ setMaxRetryAttemptsOnThrottledRequests(int maxRetryAttemptsOnThrottledRequests)
 
 See [this](https://docs.microsoft.com/en-us/java/api/com.microsoft.azure.documentdb.retryoptions?view=azure-java-stable) for further details
 
-
 Cosmos DB throttles the client, it returns an HTTP 429 error. Check the status code in the CosmosException class. 
 
 RetryOptions oftenly retrieved from ConnectionPolicy by calling `getRetryOptions()`
@@ -99,9 +98,75 @@ setRequestTimeout(int requestTimeout)
 setDirectRequestTimeout(int directRequestTimeout)
 setIdleConnectionTimeout(int idleConnectionTimeout)
 ```
+request timeout here is read timeout while waiting for the response. 
+
+Because Cosmos DB's optimized to its service, default values are not too long or not too short but for both of setRequestTimeout and setDirectRequestTimeout you need to try to set either of these accordingly to normal range of response time for the queries
 
 See [this](https://docs.microsoft.com/en-us/java/api/com.microsoft.azure.documentdb.connectionpolicy?view=azure-java-stable) for further details
 
+## For All Azure Databases with Hikari Connection Pool
+
+Consider these to add to your application.yaml (.properties)
+
+```javascript
+spring.datasource.hikari.allow-pool-suspension
+spring.datasource.hikari.auto-commit
+spring.datasource.hikari.connection-init-sql
+spring.datasource.hikari.connection-test-query
+spring.datasource.hikari.connection-timeout
+spring.datasource.hikari.health-check-properties
+spring.datasource.hikari.health-check-registry
+spring.datasource.hikari.idle-timeout
+spring.datasource.hikari.initialization-fail-timeout
+spring.datasource.hikari.isolate-internal-queries
+spring.datasource.hikari.keepalive-time
+spring.datasource.hikari.leak-detection-threshold
+spring.datasource.hikari.login-timeout
+spring.datasource.hikari.max-lifetime
+spring.datasource.hikari.maximum-pool-size
+spring.datasource.hikari.minimum-idle
+```
+
+[Here](https://github.com/brettwooldridge/HikariCP) you can find details of attributes
+
+All settings on timeouts, pools are important for better resiliency of your application. Try not to skip connection-init-sql, connection-test-query, it proactively runs these queries for connection health checks and as well as connection liveness. Even when JDBC driver doesn't support timeouts and reconnections natively
+
+## For All Azure Databases with DBCP2
+
+Consider these to add to your application.yaml (.properties)
+
+```javascript
+spring.datasource.dbcp2.connection-init-sqls
+spring.datasource.dbcp2.default-auto-commit
+spring.datasource.dbcp2.default-query-timeout
+spring.datasource.dbcp2.fast-fail-validation
+spring.datasource.dbcp2.initial-size
+spring.datasource.dbcp2.login-timeout
+spring.datasource.dbcp2.max-conn-lifetime-millis
+spring.datasource.dbcp2.max-idle
+spring.datasource.dbcp2.max-open-prepared-statements
+spring.datasource.dbcp2.max-total
+spring.datasource.dbcp2.max-wait-millis
+spring.datasource.dbcp2.min-evictable-idle-time-millis
+spring.datasource.dbcp2.min-idle
+spring.datasource.dbcp2.num-tests-per-eviction-run
+spring.datasource.dbcp2.pool-prepared-statements
+spring.datasource.dbcp2.remove-abandoned-on-borrow
+spring.datasource.dbcp2.remove-abandoned-on-maintenance
+spring.datasource.dbcp2.remove-abandoned-timeout
+spring.datasource.dbcp2.soft-min-evictable-idle-time-millis
+spring.datasource.dbcp2.test-on-borrow
+spring.datasource.dbcp2.test-on-create
+spring.datasource.dbcp2.test-on-return
+spring.datasource.dbcp2.test-while-idle
+spring.datasource.dbcp2.time-between-eviction-runs-millis
+spring.datasource.dbcp2.validation-query
+spring.datasource.dbcp2.validation-query-timeout
+```
+
+[Here](https://commons.apache.org/proper/commons-dbcp/configuration.html) you can find details of attributes
+
+Careful with all settings on timeouts, pools for better resiliency of your application. Try not to skip connection-init-sqls, validation-query, it proactively runs these queries for connection health checks and as well as connection liveness. Even when JDBC driver doesn't support timeouts and reconnections natively
 
 ## Next Topics
 
