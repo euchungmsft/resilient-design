@@ -120,7 +120,7 @@
 
 ## 다음주제
 
-- [Resilient Design](REAMD.md)
+- [Resilient Config](REAMD.md)
 - [Resilient Config for SpringBoot](resilient-config-spring-boot.md)
 - [Resilient Config for Generic Java](resilient-config-generic-java.md)
 - [Resilient Config for Python](resilient-config-python.md)

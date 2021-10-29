@@ -35,7 +35,7 @@ Python application configuration guide to achieve resiliency using patterns agai
 
 ## Next Topics
 
-- [Resilient Design](REAMD.md)
+- [Resilient Config](REAMD.md)
 - [Resilient Config for SpringBoot](resilient-config-spring-boot.md)
 - [Resilient Config for Generic Java](resilient-config-generic-java.md)
 - [Resilient Config for Python](resilient-config-python.md)
