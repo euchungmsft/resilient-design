@@ -337,8 +337,7 @@ After this change, HttpClient gets the IOException and triggers its retry mechan
 ## Next Topics
 
 - [Resilient Config](REAMD.md)
-- [Resilient Config for SpringBoot](resilient-config-spring-boot.md)
-- [Resilient Config for Generic Java](resilient-config-generic-java.md)
+- [Resilient Config for Java / SpringBoot](resilient-config-spring-boot.md)
 - [Resilient Config for Python](resilient-config-python.md)
 - [Resilient Config for Node.js](resilient-config-nodejs.md)
 - [Resilient Config for Golang](resilient-config-golang.md)
