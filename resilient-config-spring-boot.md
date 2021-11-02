@@ -168,13 +168,42 @@ spring.datasource.dbcp2.validation-query-timeout
 
 Careful with all settings on timeouts, pools for better resiliency of your application. Try not to skip connection-init-sqls, validation-query, it proactively runs these queries for connection health checks and as well as connection liveness. Even when JDBC driver doesn't support timeouts and reconnections natively
 
-### Working with ORM(Object Relation Mappers) with Connection Pools
+### Working with ORM(Object Relation Mappers) and Connection Pools
 
 With Hibernate, it provides configuration attributes for both of Hikari and DBCP. Try to set `hibernate.connection.provider_class` with Hikari `com.zaxxer.hikari.hibernate.HikariConnectionProvider` or DBCP `org.hibernate.connection.DBCPConnectionProvider` and add above mentioned attributes accordingly
 
 With MyBatis, all datasource with connection settings are in spring boot config (application.yaml/.properties) and you can explicitly load the datasources ono your purpose
 
 <to-be-developed more>
+
+## Consuming REST API calls 
+
+### Working with RetryTemplates 
+
+```Java
+@Configuration
+@EnableRetry
+public class BeanSeederServices {
+    @Bean
+    public RetryTemplate retryTemplate() {
+  SimpleRetryPolicy retryPolicy = new SimpleRetryPolicy();
+  retryPolicy.setMaxAttempts(4);
+
+  FixedBackOffPolicy backOffPolicy = new FixedBackOffPolicy();
+  backOffPolicy.setBackOffPeriod(3000);
+
+  RetryTemplate template = new RetryTemplate();
+  template.setRetryPolicy(retryPolicy);
+  template.setBackOffPolicy(backOffPolicy);
+
+  return template;
+    }
+}
+```
+
+### Working with Spring Retry (spring-retry) 
+
+
 
 ## Next Topics
 
