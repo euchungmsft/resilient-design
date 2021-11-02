@@ -178,7 +178,16 @@ With MyBatis, all datasource with connection settings are in spring boot config 
 
 ## Consuming REST API calls 
 
-### Working with RetryTemplates 
+### Working with RetryTemplates of Spring Boot
+
+Add spring-retry to your build.gradle
+
+```yaml
+// https://mvnrepository.com/artifact/org.springframework.retry/spring-retry
+implementation 'org.springframework.retry:spring-retry:1.0.3.RELEASE'
+```
+
+Create Spring Retry Template Bean
 
 ```Java
 @Configuration
@@ -186,23 +195,143 @@ With MyBatis, all datasource with connection settings are in spring boot config 
 public class BeanSeederServices {
     @Bean
     public RetryTemplate retryTemplate() {
-  SimpleRetryPolicy retryPolicy = new SimpleRetryPolicy();
-  retryPolicy.setMaxAttempts(4);
+      SimpleRetryPolicy retryPolicy = new SimpleRetryPolicy();
+      retryPolicy.setMaxAttempts(4);
 
-  FixedBackOffPolicy backOffPolicy = new FixedBackOffPolicy();
-  backOffPolicy.setBackOffPeriod(3000);
+      FixedBackOffPolicy backOffPolicy = new FixedBackOffPolicy();
+      backOffPolicy.setBackOffPeriod(3000);
 
-  RetryTemplate template = new RetryTemplate();
-  template.setRetryPolicy(retryPolicy);
-  template.setBackOffPolicy(backOffPolicy);
+      RetryTemplate template = new RetryTemplate();
+      template.setRetryPolicy(retryPolicy);
+      template.setBackOffPolicy(backOffPolicy);
 
-  return template;
+      return template;
     }
 }
 ```
 
+To enable Spring Retry in an application, we need to add the @EnableRetry annotation to the @Configuration class. And create a RetryTemplate bean, so that this bean can be used throughout the spring boot application to retry the failed operations. In this example, it tries 4 times as maximum with SimpleRetryPolicy and having back to back retries can cause locking of the resources, so we should add a BackOff policy to create a gap between retries
+
+Put Logic to retry in the Service 
+
+```Java
+@Service
+public class ConfigureNetworkService
+{
+  @Autowired
+  private RetryTemplate retryTemplate;
+
+  int counter =0;
+
+  private void configureNetworkSystem(){
+
+  retryTemplate.execute(
+    context -> {
+          verifyNwConfiguration();
+          return true;
+    });  
+  }
+
+  private void verifyNwConfiguration(){
+    counter++;
+    LOGGER.info("N/W configuration Service Failed "+ counter);
+    throw new RuntimeException();
+  }
+}
+```
+Execute block keeps executing the callback until it either succeeds or the policy dictates that we stop, in which case the most recent exception thrown by the callback will be rethrown.
+
 ### Working with Spring Retry (spring-retry) 
 
+Another pattern with Retryable and Recover annotations are [here](https://www.baeldung.com/spring-retry)
+
+### Working with Apache Commons HttpClient 4
+
+By default, HttpClient retries the failed requests 3 additional times
+
+```Java
+public void executeRetryingThreeTimesImplicitly() throws Exception {
+    try (CloseableHttpClient httpClient = HttpClients.custom()
+      .addInterceptorLast(new HttpRequestInterceptor() {
+          @Override
+          public void process(HttpRequest request, HttpContext context) throws HttpException, IOException {
+              throw new IOException("Planned");
+          }
+      }).build()) {
+        executeGetRequest(httpClient);
+    }
+}
+```
+To trigger the retry mechanism, we're adding an HttpRequestInterceptor. So when the interceptor throws IOException, HttpClient will retry the request. As a result, the request will be executed 4 times in total.
+
+Configuring Retry Behavior 
+
+```Java
+public void executeRetryingTenTimesExplicitly() throws Exception {
+    try (CloseableHttpClient httpClient = HttpClients.custom()
+      .addInterceptorLast(new HttpRequestInterceptor() {
+          @Override
+          public void process(HttpRequest request, HttpContext context) throws HttpException, IOException {
+              throw new IOException("Planned");
+          }
+      })
+      .setRetryHandler(new DefaultHttpRequestRetryHandler(10, false))
+      .build()) {
+        executeGetRequest(httpClient);
+    }
+}
+```
+
+Here we're additionally creating an instance of DefaultHttpRequestRetryHandler. Notice that we're also setting the retry count as 10. As a result, HttpClient will retry the same request 10 times. If we count the initial request execution, the same request will be executed 11 times.
+
+Custom Retry Behavior
+
+```Java
+HttpRequestRetryHandler requestRetryHandler = new HttpRequestRetryHandler() {
+    @Override
+    public boolean retryRequest(IOException exception, int executionCount, HttpContext context) {
+        return executionCount < 5;
+    }
+};
+```
+
+Here we're providing a very basic implementation. It'll retry a request at most 5 times. However, we can also introduce a more involved logic according to our needs.
+
+Then we must register our HttpRequestRetryHandler
+
+```Java
+CloseableHttpClient httpClient = HttpClients.custom()
+  .setRetryHandler(requestRetryHandler)
+  .build();
+```
+
+Retry with Status Codes (for 4xx, 5xx)
+
+By default, HttpClient doesn't retry a request if the status code is one of the client/server error codes - like 400, 404 or 500. This is because there needs to be an IOException for the retry mechanism to kick in - a network failure or an IO error. And the erroneous status codes don't cause an IOException.
+
+Though we can change this behavior.
+
+We must first add a HttpResponseInterceptor implementation. It'll throw an IOException if the status code is a client/server error code:
+
+```Java
+public void retriesFor500WithResponseInterceptor() throws Exception {
+    try (CloseableHttpClient httpClient = HttpClients.custom()
+      .addInterceptorLast(new HttpResponseInterceptor() {
+          @Override
+          public void process(HttpResponse response, HttpContext context) throws HttpException, IOException {
+              if (response.getStatusLine().getStatusCode() == 500) {
+                  throw new IOException("Retry it");
+              }
+          }
+      })
+      .build()) {
+        executeRequestForStatus(httpClient, STATUS_500_URL);
+    }
+}
+```
+Here, we're throwing an IOException, if the status code is 500.
+
+After this change, HttpClient gets the IOException and triggers its retry mechanism. But note that if a request is failing with such status codes, the result would be generally the same when retried.
 
 
 ## Next Topics
