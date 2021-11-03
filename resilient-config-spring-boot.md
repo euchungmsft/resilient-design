@@ -176,6 +176,16 @@ With MyBatis, all datasource with connection settings are in spring boot config 
 
 <to-be-developed more>
 
+## Other than these 
+
+Azure provides client side resiliency at SDK level 
+
+- Event Hub Client [here](https://docs.microsoft.com/en-us/java/api/com.azure.messaging.eventhubs.eventhubclientbuilder.retry?view=azure-java-stable)
+- Service Bus Client [here](https://docs.microsoft.com/en-us/java/api/com.microsoft.azure.servicebus.primitives.retrypolicy?view=azure-java-stable)
+- Storage Client [here](https://docs.microsoft.com/en-us/java/api/com.microsoft.azure.storage.retrypolicy?view=azure-java-legacy)
+- SQL Client [here](https://docs.microsoft.com/en-us/java/api/com.microsoft.azure.elasticdb.core.commons.transientfaulthandling.retrypolicy?view=azure-java-stable)
+- Bot Client [here](https://docs.microsoft.com/en-us/java/api/com.microsoft.bot.restclient.retry?view=botbuilder-java)
+
 ## Consuming REST API calls 
 
 ### Working with RetryTemplates of Spring Boot
