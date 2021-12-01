@@ -1,0 +1,47 @@
+plugins {
+	id 'org.springframework.boot' version '2.6.0'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'java'
+}
+
+group = 'com.eg'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+repositories {
+	mavenCentral()
+	maven { url 'https://repo.spring.io/milestone' }
+	maven { url 'https://repo.spring.io/snapshot' }	
+}
+
+dependencies {
+
+	implementation 'org.springframework.boot:spring-boot-starter'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework:spring-context:5.3.13'	
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	
+	// https://mvnrepository.com/artifact/org.springframework.data/spring-data-redis
+	implementation 'org.springframework.data:spring-data-redis:2.6.0'
+	
+	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-redis-reactive
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive:2.6.0'
+	
+	// https://mvnrepository.com/artifact/io.lettuce/lettuce-core
+	implementation 'io.lettuce:lettuce-core:6.1.5.RELEASE'
+	
+	// https://mvnrepository.com/artifact/com.azure.spring/azure-spring-boot-starter-cosmos
+	implementation 'com.azure.spring:azure-spring-boot-starter-cosmos:3.11.0'
+	
+	// https://mvnrepository.com/artifact/com.google.code.gson/gson
+	implementation 'com.google.code.gson:gson:2.8.9'
+	
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	
+	runtimeOnly 'mysql:mysql-connector-java'	
+	
+}
+
+test {
+	useJUnitPlatform()
+}

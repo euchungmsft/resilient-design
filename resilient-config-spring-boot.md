@@ -39,8 +39,61 @@ spring.redis.timeout is read timeout (default 30 min), no bigger than 5 min. spr
 Another timeout you need to be careful with is command timeout. It depends on the data loaded in Redis but try not to be waiting forever. It can be set from the code like below
 
 ```Java
-LettuceClientConfiguration clientConfig = LettuceClientConfiguration.builder()
-  .commandTimeout(redisCommandTimeout) 
+  @Bean
+  public RedisConnectionFactory redisConnectionFactory() {
+
+    RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
+    LettuceClientConfiguration clientConfig = LettuceClientConfiguration.builder()
+        .commandTimeout(Duration.ofMillis(500)).build();
+
+    return new LettuceConnectionFactory(config, clientConfig);
+  }
+```
+Or
+  
+```Java
+  @Bean
+  public LettuceClientConfiguration lettuceClientConfiguration() {
+    LettuceClientConfiguration clientConfig = LettuceClientConfiguration.builder()
+    .commandTimeout(Duration.ofMillis(500)).build();
+    return clientConfig;
+  }
+```
+
+Externalizing it
+
+In your application.yml
+
+```yaml
+spring:
+  redis:
+    lettuce:
+      xclient:
+        command-timeout: 500
+```
+
+`spring.redis.lettuce.xclient.command-timeout` is a custom property
+
+```Java
+@Configuration
+@EnableConfigurationProperties(RedisProperties.class)
+public class RedisConfig {
+
+  @Autowired
+  private Environment env;
+
+...
+...
+
+  @Bean
+  public LettuceClientConfiguration lettuceClientConfiguration() {
+    LettuceClientConfiguration clientConfig = LettuceClientConfiguration.builder()
+    .commandTimeout(Duration.ofMillis(Long.parseLong(env.getProperty("spring.redis.lettuce.xclient.command-timeout")))).build();
+
+    return clientConfig;
+  }
+
+}
 ```
 
 ### Lettuce Pool
