@@ -60,7 +60,7 @@ Or
   }
 ```
 
-Externalizing it
+Or externalizing it
 
 In your application.yml
 
@@ -96,6 +96,9 @@ public class RedisConfig {
 }
 ```
 
+Find further details from [here](https://github.com/euchungmsft/resilient-design/blob/main/spring-boot-example/src/main/java/com/eg/az/spring/demo/redis/FruitRedisController.java)
+
+
 ### Lettuce Pool
 
 Try to align with your SKU of Redis with max-active, max-idle, min-idle. When the size of the pool is not big enough, it waits and blocks all connection pool requests for max-wait. Deafault is infinit (- 1ms). Try not to leave default
@@ -103,6 +106,48 @@ Try to align with your SKU of Redis with max-active, max-idle, min-idle. When th
 ### Lettuce Cluster Refresh
 
 These are very important especially when these cluster topology changes in your Redis cluster which could be caused by maintenance events and as well as actual faults in the back-ends. Try to set both of adaptive and dynamic-refresh-sources are true so that it follows the tology changes actively and passively. period needs to be set as short as 30 sec or less than that
+
+## Cosmos DB With latest Spring Boot
+
+In the source code [here](https://github.com/euchungmsft/resilient-design/blob/main/spring-boot-example/src/main/java/com/eg/az/spring/demo/cosmos/CosmosClientConfig.java)
+
+```Java
+
+  public CosmosClientBuilder cosmosClientBuilder_rewrite() {
+
+    DirectConnectionConfig directConnectionConfig = DirectConnectionConfig.getDefaultConfig();
+    directConnectionConfig.setConnectTimeout(Duration.ofMillis(100)); // .1 sec
+    directConnectionConfig.setIdleConnectionTimeout(Duration.ofMillis(60000)); // 60 sec
+    directConnectionConfig.setIdleEndpointTimeout(Duration.ofMillis(60000)); // 60 sec
+    // directConnectionConfig.setMaxConnectionsPerEndpoint(130); // default
+    // directConnectionConfig.setMaxRequestsPerConnection(30); // default
+    directConnectionConfig.setNetworkRequestTimeout(Duration.ofMillis(5000)); // 5 sec
+
+    GatewayConnectionConfig gatewayConnectionConfig = GatewayConnectionConfig.getDefaultConfig();
+    gatewayConnectionConfig.setIdleConnectionTimeout(Duration.ofMillis(5000));
+    gatewayConnectionConfig.setMaxConnectionPoolSize(2);
+
+    ThrottlingRetryOptions retryOptions = new ThrottlingRetryOptions();
+    retryOptions.setMaxRetryAttemptsOnThrottledRequests(5);
+    retryOptions.setMaxRetryWaitTime(Duration.ofMillis(5000));
+
+    CosmosClientBuilder builder;
+
+    // Gateway mode
+    builder = new CosmosClientBuilder().endpoint(properties.getUri()).key(properties.getKey())
+        .throttlingRetryOptions(retryOptions).gatewayMode(gatewayConnectionConfig);
+
+//    // Direct mode
+//    builder = new CosmosClientBuilder().endpoint(properties.getUri()).key(properties.getKey())
+//        .throttlingRetryOptions(retryOptions).directMode(directConnectionConfig, gatewayConnectionConfig);
+
+    return builder;
+  } 
+
+```
+
+All timeouts, retries are defined in a method. And you can try to externalize them by saving these properties to application.yml (properties)
+
 
 ## Cosmos DB (SDK v4)
 
@@ -227,7 +272,43 @@ With Hibernate, it provides configuration attributes for both of Hikari and DBCP
 
 With MyBatis, all datasource with connection settings are in spring boot config (application.yaml/.properties) and you can explicitly load the datasources ono your purpose
 
-<to-be-developed more>
+In the sample project [here](https://github.com/euchungmsft/resilient-design/blob/main/spring-boot-example/src/main/resources/application.yml.example)
+
+
+```yaml
+spring:
+  datasource:
+    url: <your mysql jdbc connection string>
+    username: <your mysql username>
+    password: <your mysql password>
+    driverClassName: com.mysql.cj.jdbc.Driver
+    hikari:
+      max-active: 10
+      max-idle: 8
+      min-idle: 8
+      initial-size: 5
+      maximum-pool-size: 5
+      allow-pool-suspension: true
+      auto-commit: true
+      connection-init-sql: SELECT 1+1
+      connection-test-query: SELECT 1+1
+      connection-timeout: 500
+      idle-timeout: 10000
+      initialization-fail-timeout: 1000
+      keepalive-time: 10000
+      leak-detection-threshold: 10000
+      max-lifetime: 580000
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+
+```
+
+All settings on Datasource, Hikari CP, JPA are externalized
 
 ## Other than these 
 
